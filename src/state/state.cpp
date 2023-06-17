@@ -13,7 +13,27 @@
  */
 int State::evaluate(){
   // [TODO] design your own evaluation function
-  return 0;
+  int opponent = 1 - player;
+  int myVal = 0;
+  int opVal = 0;
+
+  for (int i = 0; i < BOARD_H; ++i) {
+    for (int j = 0; j < BOARD_W; ++j) {
+      if (board.board[player][i][j] == 1) myVal += 2;
+      else if (board.board[player][i][j] == 2) myVal += 6;
+      else if (board.board[player][i][j] == 3) myVal += 7;
+      else if (board.board[player][i][j] == 4) myVal += 8;
+      else if (board.board[player][i][j] == 5) myVal += 20;
+      else if (board.board[player][i][j] == 6) myVal += 1e9;
+      if (board.board[opponent][i][j] == 1) opVal += 2;
+      else if (board.board[opponent][i][j] == 2) opVal += 6;
+      else if (board.board[opponent][i][j] == 3) opVal += 7;
+      else if (board.board[opponent][i][j] == 4) opVal += 8;
+      else if (board.board[opponent][i][j] == 5) opVal += 20;
+      else if (board.board[opponent][i][j] == 6) opVal += 1e9;      
+    }
+  }
+  return myVal - opVal;
 }
 
 
@@ -26,7 +46,7 @@ int State::evaluate(){
 State* State::next_state(Move move){
   Board next = this->board;
   Point from = move.first, to = move.second;
-  
+
   int8_t moved = next.board[this->player][from.first][from.second];
   //promotion for pawn
   if(moved == 1 && (to.first==BOARD_H-1 || to.first==0)){
@@ -40,6 +60,7 @@ State* State::next_state(Move move){
   next.board[this->player][to.first][to.second] = moved;
   
   State* next_state = new State(next, 1-this->player);
+  next_state->pre = move;
   
   if(this->game_state != WIN)
     next_state->get_legal_actions();
